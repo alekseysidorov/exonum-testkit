@@ -959,6 +959,65 @@ impl TestNetworkConfiguration {
     }
 }
 
+#[derive(Debug)]
+/// TODO
+pub struct TestNetworkConfigurationBuilder {
+    inner: TestNetworkConfiguration,
+}
+
+impl TestNetworkConfigurationBuilder {
+    /// TODO
+    pub fn new(testkit: &TestKit) -> TestNetworkConfigurationBuilder {
+        TestNetworkConfigurationBuilder {
+            inner: testkit.configuration_change_proposal()
+        }
+    }
+
+    /// TODO
+    pub fn actual_from(&mut self) -> &mut Height {
+        &mut self.inner.stored_configuration.actual_from
+    }
+
+    /// TODO
+    pub fn us(&mut self) -> &mut TestNode {
+        &mut self.inner.us
+    }
+
+    /// TODO
+    pub fn validators(&mut self) -> &mut Vec<TestNode> {
+        &mut self.inner.validators
+    }
+
+    /// TODO
+    pub fn consensus_configuration(&mut self) -> &mut ConsensusConfig {
+        &mut self.inner.stored_configuration.consensus
+    }
+
+    /// Returns the configuration for service with the given identifier.
+    pub fn service_config<D>(&self, id: &str) -> D
+    where
+        for<'de> D: Deserialize<'de>,
+    {
+        self.inner.service_config(id)
+    }
+
+    /// Modifies the configuration of the service with the given identifier.
+    pub fn set_service_config<D>(&mut self, id: &str, config: D)
+    where
+        D: Serialize,
+    {
+        self.inner.set_service_config(id, config)
+    }
+
+    /// TODO
+    pub fn create(self) -> TestNetworkConfiguration {
+        let mut inner = self.inner;
+        let validators = inner.validators.clone();
+        inner.set_validators(validators);
+        inner
+    }
+}
+
 #[doc(hidden)]
 #[derive(Debug)]
 pub enum ApiKind {

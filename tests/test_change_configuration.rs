@@ -6,7 +6,7 @@ extern crate serde_derive;
 extern crate serde_json;
 
 use exonum::helpers::{Height, ValidatorId};
-use exonum_testkit::TestKitBuilder;
+use exonum_testkit::{TestKitBuilder, TestNetworkConfigurationBuilder};
 use exonum::blockchain::Schema;
 use exonum::storage::StorageValue;
 
@@ -16,12 +16,10 @@ fn test_add_to_validators() {
 
     let cfg_change_height = Height(5);
     let proposal = {
-        let mut cfg = testkit.configuration_change_proposal();
-        let mut validators = cfg.validators().to_vec();
-        validators.push(testkit.network().us().clone());
-        cfg.set_actual_from(cfg_change_height);
-        cfg.set_validators(validators);
-        cfg
+        let mut cfg_builder = TestNetworkConfigurationBuilder::new(&testkit);
+        cfg_builder.validators().push(testkit.network().us().clone());
+        *cfg_builder.actual_from() = cfg_change_height;
+        cfg_builder.create()
     };
     let stored = proposal.stored_configuration().clone();
     testkit.commit_configuration_change(proposal);
