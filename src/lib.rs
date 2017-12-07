@@ -443,6 +443,17 @@ impl TestKitBuilder {
     }
 }
 
+/// Pool of unconfirmed transactions in the test node. 
+#[derive(Debug)]
+pub struct TestTxPool(TxPool);
+
+impl TestTxPool {
+    #[must_use = "You should check for a transaction availability."]
+    pub fn contains_key<H: AsRef<crypto::Hash>>(&self, key: H) -> bool {
+        self.0.contains_key(key)
+    }
+}
+
 /// Testkit for testing blockchain services. It offers simple network configuration emulation
 /// (with no real network setup).
 pub struct TestKit {
